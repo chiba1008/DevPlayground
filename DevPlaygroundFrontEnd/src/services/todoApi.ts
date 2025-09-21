@@ -20,10 +20,9 @@ class TodoApi {
     await this.httpClient.delete(`/todo/delete/${todoId}`)
   }
 
-  // TODO: Update functionality if needed in the future
-  // async updateTodo(todoId: number, todo: UpdateTodoRequest): Promise<Todo> {
-  //   return this.httpClient.put<Todo>(`/todo/update/${todoId}`, todo)
-  // }
+  async updateTodoStatus(todoId: number, status: string): Promise<Todo> {
+    return this.httpClient.put<Todo>(`/todo/update/${todoId}/status`, { status })
+  }
 }
 
 export const todoApi = new TodoApi()

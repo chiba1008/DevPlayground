@@ -49,6 +49,12 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
+      path: '/kanban',
+      name: 'kanban',
+      component: () => import('@/views/KanbanView.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
       path: '/error/403',
       name: 'error-forbidden',
       component: ErrorForbiddenView,

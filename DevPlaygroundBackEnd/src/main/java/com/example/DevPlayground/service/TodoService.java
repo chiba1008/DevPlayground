@@ -47,4 +47,12 @@ public class TodoService {
     public void deleteTodoById(Long todoId) {
         todoRepository.deleteById(todoId);
     }
+
+    public Todo updateTodoStatus(Long todoId, String status) {
+        Todo todo = todoRepository.findById(todoId)
+                .orElseThrow(() -> new RuntimeException("Todo not found with id: " + todoId));
+        
+        todo.setStatus(status);
+        return todoRepository.save(todo);
+    }
 }

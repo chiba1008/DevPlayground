@@ -58,5 +58,12 @@ public class TodoController {
         return ResponseEntity.noContent().build();
     }
 
+    @PutMapping("/update/{todoId}/status")
+    public ResponseEntity<Todo> updateTodoStatus(@PathVariable Long todoId, @RequestBody StatusUpdateRequest request) {
+        Todo updatedTodo = todoService.updateTodoStatus(todoId, request.status());
+        return ResponseEntity.ok(updatedTodo);
+    }
+
     public record TodoRequest(String userName, String title, String description, String status, String dueDate) {}
+    public record StatusUpdateRequest(String status) {}
 }
