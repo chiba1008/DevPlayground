@@ -40,7 +40,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers(HttpMethod.POST, "/api/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/logout").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/logout-manual").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/current-user").authenticated()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/*").authenticated()

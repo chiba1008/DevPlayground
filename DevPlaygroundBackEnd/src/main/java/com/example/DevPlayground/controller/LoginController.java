@@ -45,7 +45,7 @@ public class LoginController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/logout-manual")
+    @PostMapping("/logout")
     public ResponseEntity<Void> logoutManual(HttpServletRequest request, HttpServletResponse response) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         

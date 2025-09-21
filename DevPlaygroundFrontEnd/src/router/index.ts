@@ -5,6 +5,9 @@ import UserManagerView from '@/views/UserManagerView.vue'
 import LoginView from '@/views/LoginView.vue'
 import AdminView from '@/views/AdminView.vue'
 import CreateUserView from '@/views/CreateUserView.vue'
+import ErrorNotFoundView from '@/views/ErrorNotFoundView.vue'
+import ErrorForbiddenView from '@/views/ErrorForbiddenView.vue'
+import ErrorServerView from '@/views/ErrorServerView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -39,6 +42,24 @@ const router = createRouter({
       component: LoginView,
       meta: { requiresAuth: false }
     },
+    {
+      path: '/error/403',
+      name: 'error-forbidden',
+      component: ErrorForbiddenView,
+      meta: { requiresAuth: false }
+    },
+    {
+      path: '/error/500',
+      name: 'error-server',
+      component: ErrorServerView,
+      meta: { requiresAuth: false }
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'error-not-found',
+      component: ErrorNotFoundView,
+      meta: { requiresAuth: false }
+    },
   ],
 })
 
@@ -60,8 +81,8 @@ router.beforeEach(async (to, _from, next) => {
   if (to.meta.requiredRoles && isAuthenticated.value) {
     const requiredRoles = to.meta.requiredRoles as string[]
     if (!hasAnyRole(requiredRoles)) {
-      // Redirect to home if user doesn't have required roles
-      next({ name: 'home' })
+      // Redirect to 403 error page if user doesn't have required roles
+      next({ name: 'error-forbidden' })
       return
     }
   }
