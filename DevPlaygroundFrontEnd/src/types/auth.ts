@@ -11,6 +11,7 @@ export interface LoginResponse {
 export interface UserInfo {
   username: string
   authorities: string
+  roles: string[]
 }
 
 export interface AuthState {

@@ -12,6 +12,7 @@ export function useAuth() {
     const isAuthenticated = computed(() => state.value.isAuthenticated)
     const user = computed(() => state.value.user)
     const loading = computed(() => state.value.loading)
+    const userRoles = computed(() => state.value.user?.roles || [])
 
     const login = async (credentials: LoginRequest) => {
         try {
@@ -76,15 +77,33 @@ export function useAuth() {
         }
     }
 
+    const hasRole = (role: string): boolean => {
+        return userRoles.value.includes(role)
+    }
+
+    const hasAnyRole = (roles: string[]): boolean => {
+        return roles.some(role => userRoles.value.includes(role))
+    }
+
+    const hasAllRoles = (roles: string[]): boolean => {
+        return roles.every(role => userRoles.value.includes(role))
+    }
+
     return {
         // State
         isAuthenticated,
         user,
         loading,
+        userRoles,
 
         // Actions
         login,
         logout,
         checkAuthStatus,
+
+        // Role checking
+        hasRole,
+        hasAnyRole,
+        hasAllRoles,
     }
 }

@@ -3,7 +3,7 @@ import { onMounted } from 'vue'
 import { useAuth } from '@/composables/useAuth'
 import './styles/global.css'
 
-const { isAuthenticated, user, logout, checkAuthStatus } = useAuth()
+const { isAuthenticated, user, logout, checkAuthStatus, hasRole } = useAuth()
 
 onMounted(() => {
   checkAuthStatus()
@@ -23,9 +23,10 @@ const handleLogout = async () => {
         <nav class="main-nav">
           <template v-if="isAuthenticated">
             <RouterLink to="/" class="nav-link">Home</RouterLink>
-            <RouterLink to="/users" class="nav-link">User Manager</RouterLink>
+            <RouterLink v-if="hasRole('ADMIN')" to="/admin" class="nav-link">Admin</RouterLink>
+            <RouterLink v-if="hasRole('ADMIN')" to="/users" class="nav-link">Users</RouterLink>
             <div class="user-info">
-              <span class="welcome-text">Welcome, {{ user?.username }}</span>
+              <span class="welcome-text">Welcome, {{ user?.username }} ({{ user?.roles?.join(', ') }})</span>
               <button @click="handleLogout" class="logout-btn">Logout</button>
             </div>
           </template>

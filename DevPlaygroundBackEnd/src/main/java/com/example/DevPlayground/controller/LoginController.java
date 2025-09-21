@@ -62,7 +62,10 @@ public class LoginController {
         
         if (authentication != null && authentication.isAuthenticated() && 
             !authentication.getName().equals("anonymousUser")) {
-            UserInfo userInfo = new UserInfo(authentication.getName(), authentication.getAuthorities().toString());
+            String[] roles = authentication.getAuthorities().stream()
+                    .map(authority -> authority.getAuthority().replace("ROLE_", ""))
+                    .toArray(String[]::new);
+            UserInfo userInfo = new UserInfo(authentication.getName(), authentication.getAuthorities().toString(), roles);
             return ResponseEntity.ok(userInfo);
         }
         
@@ -75,6 +78,6 @@ public class LoginController {
     public record LoginResponse(boolean success, String username) {
     }
     
-    public record UserInfo(String username, String authorities) {
+    public record UserInfo(String username, String authorities, String[] roles) {
     }
 }
