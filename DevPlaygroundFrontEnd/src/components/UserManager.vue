@@ -59,7 +59,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { apiService, type User } from '../services/api'
+import { userApi, type User } from '@/services'
 import '../styles/components/UserManager.css'
 
 const loading = ref(false)
@@ -83,7 +83,7 @@ const showError = (message: string) => {
 const loadUsers = async () => {
   loading.value = true
   try {
-    users.value = await apiService.getAllUsers()
+    users.value = await userApi.getAllUsers()
   } catch (err) {
     showError(err instanceof Error ? err.message : 'Failed to load users')
   } finally {
@@ -94,7 +94,7 @@ const loadUsers = async () => {
 const createUser = async () => {
   loading.value = true
   try {
-    const createdUser = await apiService.saveUser(newUser.value)
+    const createdUser = await userApi.saveUser(newUser.value)
     users.value.push(createdUser)
     newUser.value = { username: '', email: '' }
   } catch (err) {
@@ -112,7 +112,7 @@ const searchUserByUsername = async () => {
 
   loading.value = true
   try {
-    searchResult.value = await apiService.getUserByUsername(searchUsername.value)
+    searchResult.value = await userApi.getUserByUsername(searchUsername.value)
   } catch (err) {
     showError(err instanceof Error ? err.message : 'Failed to search user')
   } finally {

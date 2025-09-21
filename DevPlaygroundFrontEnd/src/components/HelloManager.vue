@@ -20,7 +20,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { apiService, type HelloResponse } from '../services/api'
+import { helloApi, type HelloResponse } from '@/services'
 import '../styles/components/HelloManager.css'
 
 const helloResponse = ref<HelloResponse | null>(null)
@@ -37,7 +37,7 @@ const showError = (message: string) => {
 const testHelloApi = async () => {
   loading.value = true
   try {
-    helloResponse.value = await apiService.getHello()
+    helloResponse.value = await helloApi.getHello()
   } catch (err) {
     showError(err instanceof Error ? err.message : 'Failed to connect to API')
   } finally {

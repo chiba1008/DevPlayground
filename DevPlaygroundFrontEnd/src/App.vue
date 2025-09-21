@@ -10,6 +10,7 @@ import './styles/global.css'
         <nav class="main-nav">
           <RouterLink to="/" class="nav-link">Home</RouterLink>
           <RouterLink to="/users" class="nav-link">User Manager</RouterLink>
+          <RouterLink to="/login" class="nav-link">Login</RouterLink>
         </nav>
       </div>
     </header>
