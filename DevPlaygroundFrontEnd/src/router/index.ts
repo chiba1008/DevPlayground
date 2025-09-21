@@ -43,6 +43,24 @@ const router = createRouter({
       meta: { requiresAuth: false }
     },
     {
+      path: '/todos',
+      name: 'todos',
+      component: () => import('@/views/TodoView.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/kanban',
+      name: 'kanban',
+      component: () => import('@/views/KanbanView.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/calendar',
+      name: 'calendar',
+      component: () => import('@/views/CalendarView.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
       path: '/error/403',
       name: 'error-forbidden',
       component: ErrorForbiddenView,

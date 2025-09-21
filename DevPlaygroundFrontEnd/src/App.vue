@@ -23,6 +23,7 @@ const handleLogout = async () => {
         <nav class="main-nav">
           <template v-if="isAuthenticated">
             <RouterLink to="/" class="nav-link">Home</RouterLink>
+            <RouterLink to="/todos" class="nav-link">Todo</RouterLink>
             <RouterLink v-if="hasRole('ADMIN')" to="/admin" class="nav-link">Admin</RouterLink>
             <RouterLink v-if="hasRole('ADMIN')" to="/users" class="nav-link">Users</RouterLink>
             <div class="user-info">
