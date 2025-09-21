@@ -1,5 +1,5 @@
 // Export types
-export type { User, HelloResponse, ApiError } from '@/types/api'
+export type { User, HelloResponse, ApiError, LoginRequest, LoginResponse } from '@/types/api'
 
 // Export services
 export { HttpClient } from './http'

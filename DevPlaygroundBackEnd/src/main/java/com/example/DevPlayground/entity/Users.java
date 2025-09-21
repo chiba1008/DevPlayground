@@ -9,7 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Collections;
 
 @Entity
 @Table(name = "users")
@@ -24,7 +24,7 @@ public class Users implements UserDetails, CredentialsContainer {
     @Column(nullable = false, unique = true)
     private String username;
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
     private String email;
 
     @Column(nullable = false)
@@ -64,6 +64,6 @@ public class Users implements UserDetails, CredentialsContainer {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.role.getAuthorities();
+        return Collections.singleton(this.role.getAuthority());
     }
 }

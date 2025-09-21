@@ -1,51 +1,69 @@
 <template>
     <div class="login-manager">
-        <section class="login-section">
+        <div v-if="!isAuthenticated" class="login-section">
             <h3>Login</h3>
-            <form @submit.prevent="loginApi">
+            <form @submit.prevent="performLogin">
                 <div class="form-group">
                     <label for="username">Username:</label>
-                    <input id="username" v-model="newUser.username" type="text" required />
+                    <input id="username" v-model="loginRequest.username" type="text" required />
                 </div>
                 <div class="form-group">
-                    <label for="email">Email:</label>
-                    <input id="email" v-model="newUser.email" type="email" required />
+                    <label for="password">Password:</label>
+                    <input id="password" v-model="loginRequest.password" type="password" required />
                 </div>
-                <button type="submit" @click="loginApi" :disabled="loading">Login</button>
+                <button type="submit" :disabled="loading">Login</button>
             </form>
             <!-- Error Display -->
             <div v-if="error" class="error"><strong>Error:</strong> {{ error }}</div>
 
             <!-- Loading Indicator -->
             <div v-if="loading" class="loading">Loading...</div>
-        </section>
+        </div>
+
+        <div v-else class="user-section">
+            <h3>Welcome, {{ user?.username }}!</h3>
+            <p>Authorities: {{ user?.authorities }}</p>
+            <button @click="performLogout" :disabled="loading">Logout</button>
+        </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { helloApi, type User } from '@/services'
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuth } from '@/composables/useAuth'
+import type { LoginRequest } from '@/types/auth'
 import '../styles/components/HelloManager.css'
 
-const loading = ref(false)
+const { isAuthenticated, user, loading, login, logout, checkAuthStatus } = useAuth()
+const router = useRouter()
+
 const error = ref('')
 
-const newUser = ref<User>({
+const loginRequest = ref<LoginRequest>({
     username: '',
-    email: '',
+    password: '',
 })
 
-const loginApi = async () => {
-    loading.value = true
-    try {
-        await helloApi.getHello()
-        // TODO: Implement actual login logic
-        console.log('Login functionality not implemented yet')
-    } catch (err) {
-        showError(err instanceof Error ? err.message : 'Failed to connect to API')
-    } finally {
-        loading.value = false
+onMounted(() => {
+    checkAuthStatus()
+})
+
+const performLogin = async () => {
+    const result = await login(loginRequest.value)
+    
+    if (!result.success) {
+        showError(result.error || 'Login failed')
+    } else {
+        loginRequest.value.username = ''
+        loginRequest.value.password = ''
+        router.push({ name: 'home' })
     }
+}
+
+const performLogout = async () => {
+    await logout()
+    router.push({ name: 'login' })
 }
 
 const showError = (message: string) => {
@@ -57,12 +75,59 @@ const showError = (message: string) => {
 </script>
 
 <style scoped>
-.login-section {
+.login-section, .user-section {
     max-width: 400px;
     margin: 0 auto;
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 8px;
     background-color: #f9f9f9;
+}
+
+.user-section {
+    text-align: center;
+}
+
+.user-section h3 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.user-section p {
+    color: #666;
+    margin-bottom: 15px;
+}
+
+.error {
+    color: #e74c3c;
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #fdf2f2;
+    border-radius: 4px;
+    border: 1px solid #fecaca;
+}
+
+.loading {
+    color: #3498db;
+    margin-top: 10px;
+    text-align: center;
+}
+
+button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:disabled {
+    background-color: #bdc3c7;
+    cursor: not-allowed;
+}
+
+button:hover:not(:disabled) {
+    background-color: #2980b9;
 }
 </style>

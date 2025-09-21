@@ -9,6 +9,17 @@ export interface HelloResponse {
   status: string;
 }
 
+export interface LoginRequest {
+  username: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  success: boolean;
+  message: string;
+  token?: string;
+}
+
 export interface ApiError {
   message: string;
   status: number;

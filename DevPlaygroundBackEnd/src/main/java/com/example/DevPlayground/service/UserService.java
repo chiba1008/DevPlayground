@@ -1,85 +1,49 @@
 package com.example.DevPlayground.service;
 
-import com.example.DevPlayground.entity.User;
+import com.example.DevPlayground.entity.Role;
+import com.example.DevPlayground.entity.Users;
 import com.example.DevPlayground.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    /**
-     * Get all users
-     *
-     * @return a list of all users
-     */
-    public List<User> getAllUsers() {
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username + " not found"));
+    }
+
+    public List<Users> getAllUsers() {
         return userRepository.findAll();
     }
 
-    /**
-     * Get user by username
-     *
-     * @param username the username of the user
-     * @return an Optional containing the User if found, or empty if not found
-     */
-    public Optional<User> getUserByUsername(String username) {
-        return userRepository.findByUsername(username);
-    }
-
-    /**
-     * Get user by email
-     *
-     * @param email the email of the user
-     * @return an Optional containing the User if found, or empty if not found
-     */
-    public Optional<User> getUserByEmail(String email) {
-        return userRepository.findByEmail(email);
-    }
-
-    /**
-     * Check if a user exists by username
-     *
-     * @param username the username to check
-     * @return true if a user with the given username exists, false otherwise
-     */
-    public boolean userExistsByUsername(String username) {
-        return userRepository.existsByUsername(username);
-    }
-
-    /**
-     * Check if a user exists by email
-     *
-     * @param email the email to check
-     * @return true if a user with the given email exists, false otherwise
-     */
-    public boolean userExistsByEmail(String email) {
-        return userRepository.existsByEmail(email);
-    }
-
-    /**
-     * Save a user
-     *
-     * @param user the user to save
-     * @return the saved user
-     */
-    public User save(User user) {
+    public Users save(Users user) {
         return userRepository.save(user);
     }
 
-    /**
-     * Delete all users
-     */
-    public void deleteAllUsers() {
-        userRepository.deleteAll();
+    public Users createUser(String username, String email, String password, Role role) {
+        Users user = new Users();
+        user.setUsername(username);
+        user.setEmail(email);
+        user.setPassword(passwordEncoder.encode(password));
+        user.setRole(role);
+        user.setEnabled(true);
+        return userRepository.save(user);
     }
+
 }
