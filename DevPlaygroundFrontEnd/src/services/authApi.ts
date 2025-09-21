@@ -13,7 +13,7 @@ class AuthApi {
   }
 
   async logout(): Promise<void> {
-    await this.httpClient.post('/logout-manual')
+    await this.httpClient.post('/logout')
   }
 
   async getCurrentUser(): Promise<UserInfo> {
