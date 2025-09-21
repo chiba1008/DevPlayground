@@ -3,9 +3,32 @@
         <div class="todo-header">
             <h1>Todo Manager</h1>
             <p>タスクを管理して生産性を向上させましょう</p>
+
+            <!-- View Tabs -->
+            <div class="view-tabs">
+                <button
+                    @click="setActiveView('list')"
+                    :class="['tab-btn', { active: activeView === 'list' }]"
+                >
+                    リスト表示
+                </button>
+                <button
+                    @click="setActiveView('kanban')"
+                    :class="['tab-btn', { active: activeView === 'kanban' }]"
+                >
+                    カンバン
+                </button>
+                <button
+                    @click="setActiveView('calendar')"
+                    :class="['tab-btn', { active: activeView === 'calendar' }]"
+                >
+                    カレンダー
+                </button>
+            </div>
         </div>
 
-        <div class="todo-content">
+        <!-- List View -->
+        <div v-if="activeView === 'list'" class="todo-content">
             <!-- Create Todo Form -->
             <div class="todo-section">
                 <h2>新しいタスクを作成</h2>
@@ -30,6 +53,28 @@
             </div>
         </div>
 
+        <!-- Kanban View -->
+        <KanbanBoard
+            v-if="activeView === 'kanban'"
+            :todos="todos"
+            :loading="loading"
+            :user-name="userName"
+            @todo-created="handleTodoCreated"
+            @todo-updated="handleTodoCreated"
+            @todo-deleted="handleTodoCreated"
+        />
+
+        <!-- Calendar View -->
+        <CalendarBoard
+            v-if="activeView === 'calendar'"
+            :todos="todos"
+            :loading="loading"
+            :user-name="userName"
+            @todo-created="handleTodoCreated"
+            @todo-updated="handleTodoCreated"
+            @todo-deleted="handleTodoCreated"
+        />
+
         <!-- Error Display -->
         <div v-if="error" class="error-message"><strong>エラー:</strong> {{ error }}</div>
     </div>
@@ -42,6 +87,8 @@ import { todoApi } from '@/services/todoApi'
 import type { Todo } from '@/types/todo'
 import TodoForm from '@/components/TodoForm.vue'
 import TodoList from '@/components/TodoList.vue'
+import KanbanBoard from '@/components/KanbanBoard.vue'
+import CalendarBoard from '@/components/CalendarBoard.vue'
 
 const { user, checkAuthStatus } = useAuth()
 const userName = computed(() => {
@@ -53,6 +100,7 @@ const userName = computed(() => {
 const todos = ref<Todo[]>([])
 const loading = ref(false)
 const error = ref('')
+const activeView = ref<'list' | 'kanban' | 'calendar'>('list')
 
 const showError = (message: string) => {
     error.value = message
@@ -93,6 +141,10 @@ const handleTodoDeleted = async (todoId: number) => {
     }
 }
 
+const setActiveView = (view: 'list' | 'kanban' | 'calendar') => {
+    activeView.value = view
+}
+
 onMounted(async () => {
     // Ensure auth status is checked first
     if (!user.value) {
@@ -127,6 +179,37 @@ onMounted(async () => {
 .todo-header p {
     font-size: 1.2rem;
     opacity: 0.9;
+    margin-bottom: 20px;
+}
+
+.view-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+.tab-btn {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.tab-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.tab-btn.active {
+    background: rgba(255, 255, 255, 0.9);
+    color: #667eea;
+    border-color: rgba(255, 255, 255, 0.9);
+    font-weight: 600;
 }
 
 .todo-content {
