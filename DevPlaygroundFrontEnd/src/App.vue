@@ -25,6 +25,7 @@ const handleLogout = async () => {
             <RouterLink to="/" class="nav-link">Home</RouterLink>
             <RouterLink to="/todos" class="nav-link">Todo</RouterLink>
             <RouterLink to="/kanban" class="nav-link">カンバン</RouterLink>
+            <RouterLink to="/calendar" class="nav-link">カレンダー</RouterLink>
             <RouterLink v-if="hasRole('ADMIN')" to="/admin" class="nav-link">Admin</RouterLink>
             <RouterLink v-if="hasRole('ADMIN')" to="/users" class="nav-link">Users</RouterLink>
             <div class="user-info">

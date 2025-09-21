@@ -55,6 +55,12 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
+      path: '/calendar',
+      name: 'calendar',
+      component: () => import('@/views/CalendarView.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
       path: '/error/403',
       name: 'error-forbidden',
       component: ErrorForbiddenView,
