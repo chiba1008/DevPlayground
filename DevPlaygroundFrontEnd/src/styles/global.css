@@ -1,0 +1,19 @@
+/* Global Styles */
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #2c3e50;
+}
+
+header {
+  text-align: center;
+  background-color: #f8f9fa;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #dee2e6;
+}
+
+main {
+  padding: 0 20px;
+}
