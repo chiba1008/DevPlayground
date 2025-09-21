@@ -3,6 +3,11 @@
     <div class="page-header">
       <h1>User Management</h1>
       <p>Create, search, and manage users</p>
+      <div class="header-actions">
+        <RouterLink to="/users/create" class="btn btn-primary">
+          + Create New User
+        </RouterLink>
+      </div>
     </div>
     <UserManager />
   </div>
@@ -26,6 +31,33 @@ import UserManager from '../components/UserManager.vue'
   background-color: #f8f9fa;
   border-radius: 8px;
   border-left: 4px solid #007bff;
+  position: relative;
+}
+
+.header-actions {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  text-decoration: none;
+  display: inline-block;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-primary {
+  background-color: #27ae60;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #2ecc71;
 }
 
 .page-header h1 {
