@@ -48,7 +48,7 @@ jobs:
           ./gradlew build
 
       - name: Upload test results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: test-results-java-${{ matrix.java-version }}
@@ -57,7 +57,7 @@ jobs:
             DevPlaygroundBackEnd/build/test-results/
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: success()
         with:
           name: jar-artifact-java-${{ matrix.java-version }}
