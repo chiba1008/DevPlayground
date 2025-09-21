@@ -1,13 +1,12 @@
 <template>
   <div class="hello-manager">
-    <h2>Hello API Manager</h2>
+    <h2>API Connection Test</h2>
 
     <!-- Hello API Test -->
     <section class="api-test">
-      <h3>API Connection Test</h3>
       <button @click="testHelloApi" :disabled="loading">Test Hello API</button>
       <div v-if="helloResponse" class="response">
-        <strong>Response:</strong> {{ helloResponse.message }} ({{ helloResponse.timestamp }})
+        <strong>Response:</strong> {{ helloResponse.message }} ({{ helloResponse.status }})
       </div>
     </section>
 

@@ -38,8 +38,8 @@
           id="searchUsername"
           v-model="searchUsername"
           type="text"
-          @input="searchUserByUsername"
         />
+        <button @click="searchUserByUsername" :disabled="loading || !searchUsername.trim()">Search</button>
       </div>
       <div v-if="searchResult" class="search-result">
         <strong>Found:</strong> {{ searchResult.username }} ({{ searchResult.email }})
