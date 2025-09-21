@@ -20,8 +20,13 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { helloApi, type HelloResponse } from '@/services'
+import { HelloApi } from '@/services/helloApi'
+import { HttpClient } from '@/services/http'
+import type { HelloResponse } from '@/types/api'
 import '../styles/components/HelloManager.css'
+
+const httpClient = new HttpClient()
+const helloApi = new HelloApi(httpClient)
 
 const helloResponse = ref<HelloResponse | null>(null)
 const loading = ref(false)
