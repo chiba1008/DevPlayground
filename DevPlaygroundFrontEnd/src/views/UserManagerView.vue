@@ -21,7 +21,7 @@ import UserManager from '../components/UserManager.vue'
 
 .page-header {
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 10px;
   padding: 20px;
   background-color: #f8f9fa;
   border-radius: 8px;

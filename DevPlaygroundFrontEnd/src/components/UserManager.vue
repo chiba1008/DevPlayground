@@ -20,7 +20,7 @@
     <!-- User List -->
     <section class="user-list">
       <h3>All Users</h3>
-      <button @click="loadUsers" :disabled="loading">Refresh Users</button>
+      <button class="all-users-button" @click="loadUsers" :disabled="loading">Refresh Users</button>
       <div v-if="users.length > 0" class="users">
         <div v-for="user in users" :key="user.id" class="user-item">
           <strong>{{ user.username }}</strong> ({{ user.email }})
@@ -34,12 +34,14 @@
       <h3>Search User</h3>
       <div class="form-group">
         <label for="searchUsername">Search by Username:</label>
-        <input
-          id="searchUsername"
-          v-model="searchUsername"
-          type="text"
-        />
-        <button @click="searchUserByUsername" :disabled="loading || !searchUsername.trim()">Search</button>
+        <input id="searchUsername" v-model="searchUsername" type="text" />
+        <button
+          class="search-user-button"
+          @click="searchUserByUsername"
+          :disabled="loading || !searchUsername.trim()"
+        >
+          Search
+        </button>
       </div>
       <div v-if="searchResult" class="search-result">
         <strong>Found:</strong> {{ searchResult.username }} ({{ searchResult.email }})
@@ -122,4 +124,12 @@ onMounted(() => {
   loadUsers()
 })
 </script>
+<style scoped>
+.all-users-button {
+  margin-bottom: 10px;
+}
 
+.search-user-button {
+  margin-left: 10px;
+}
+</style>
