@@ -62,9 +62,11 @@ public class LoginController {
         
         if (authentication != null && authentication.isAuthenticated() && 
             !authentication.getName().equals("anonymousUser")) {
+            System.out.println("Current user authorities: " + authentication.getAuthorities());
             String[] roles = authentication.getAuthorities().stream()
                     .map(authority -> authority.getAuthority().replace("ROLE_", ""))
                     .toArray(String[]::new);
+            System.out.println("Processed roles: " + java.util.Arrays.toString(roles));
             UserInfo userInfo = new UserInfo(authentication.getName(), authentication.getAuthorities().toString(), roles);
             return ResponseEntity.ok(userInfo);
         }

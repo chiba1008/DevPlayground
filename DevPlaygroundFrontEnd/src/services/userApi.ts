@@ -1,58 +1,38 @@
-import type { User } from '@/types/api'
 import { HttpClient } from './http'
 
-export class UserApi {
-  private http: HttpClient
+export interface CreateUserRequest {
+  username: string
+  email: string
+  password: string
+  role: string
+}
 
-  constructor(httpClient: HttpClient) {
-    this.http = httpClient
+export interface UserResponse {
+  id: number
+  username: string
+  email: string
+  role: string
+  enabled: boolean
+}
+
+class UserApi {
+  private httpClient: HttpClient
+
+  constructor() {
+    this.httpClient = new HttpClient()
   }
 
-  async getAllUsers(): Promise<User[]> {
-    return this.http.get<User[]>('/users/all')
+  async getAllUsers(): Promise<UserResponse[]> {
+    return this.httpClient.get<UserResponse[]>('/admin/users')
   }
 
-  async getUserByUsername(username: string): Promise<User | null> {
-    try {
-      return await this.http.get<User>(`/users/by-username?username=${encodeURIComponent(username)}`)
-    } catch (error: unknown) {
-      if (
-        typeof error === 'object' &&
-        error !== null &&
-        'status' in error &&
-        (error as { status?: number }).status === 404
-      ) {
-        return null
-      }
-      throw error
-    }
+  async createUser(userRequest: CreateUserRequest): Promise<UserResponse> {
+    return this.httpClient.post<UserResponse>('/admin/users', userRequest)
   }
 
-  async getUserByEmail(email: string): Promise<User | null> {
-    try {
-      return await this.http.get<User>(`/users/by-email?email=${encodeURIComponent(email)}`)
-    } catch (error: unknown) {
-      if (
-        typeof error === 'object' &&
-        error !== null &&
-        'status' in error &&
-        (error as { status?: number }).status === 404
-      ) {
-        return null
-      }
-      throw error
-    }
-  }
-
-  async userExistsByUsername(username: string): Promise<boolean> {
-    return this.http.get<boolean>(`/users/exists-by-username?username=${encodeURIComponent(username)}`)
-  }
-
-  async userExistsByEmail(email: string): Promise<boolean> {
-    return this.http.get<boolean>(`/users/exists-by-email?email=${encodeURIComponent(email)}`)
-  }
-
-  async saveUser(user: User): Promise<User> {
-    return this.http.post<User>('/users/save', user)
+  async deleteUser(id: number): Promise<void> {
+    return this.httpClient.delete<void>(`/admin/users/${id}`)
   }
 }
+
+export const userApi = new UserApi()

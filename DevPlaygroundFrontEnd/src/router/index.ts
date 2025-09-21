@@ -4,6 +4,7 @@ import HomeView from '@/views/HomeView.vue'
 import UserManagerView from '@/views/UserManagerView.vue'
 import LoginView from '@/views/LoginView.vue'
 import AdminView from '@/views/AdminView.vue'
+import CreateUserView from '@/views/CreateUserView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -24,6 +25,12 @@ const router = createRouter({
       path: '/users',
       name: 'users',
       component: UserManagerView,
+      meta: { requiresAuth: true, requiredRoles: ['ADMIN'] }
+    },
+    {
+      path: '/users/create',
+      name: 'create-user',
+      component: CreateUserView,
       meta: { requiresAuth: true, requiredRoles: ['ADMIN'] }
     },
     {
