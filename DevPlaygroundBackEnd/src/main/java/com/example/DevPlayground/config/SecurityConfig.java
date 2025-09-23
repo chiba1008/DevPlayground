@@ -40,6 +40,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers(HttpMethod.POST, "/api/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/logout").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/passkey").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/current-user").authenticated()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/*").authenticated()
@@ -50,6 +51,11 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                         .maximumSessions(1)
                         .maxSessionsPreventsLogin(false)
+                )
+                .webAuthn((webAuthn) -> webAuthn
+                        .rpName("Spring Security Relying Party") // TODO replace
+                        .rpId("localhost")
+                        .allowedOrigins("http://localhost:5173")
                 )
                 .logout(logout -> logout
                         .logoutUrl("/api/logout")

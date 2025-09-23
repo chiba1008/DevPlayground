@@ -51,7 +51,7 @@ onMounted(() => {
 
 const performLogin = async () => {
     const result = await login(loginRequest.value)
-    
+
     if (!result.success) {
         showError(result.error || 'Login failed')
     } else {
@@ -75,7 +75,8 @@ const showError = (message: string) => {
 </script>
 
 <style scoped>
-.login-section, .user-section {
+.login-section,
+.user-section {
     max-width: 400px;
     margin: 0 auto;
     padding: 20px;
