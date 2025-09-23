@@ -3,6 +3,9 @@ package com.example.DevPlayground.controller;
 import com.example.DevPlayground.dto.PasskeyRegistrationFinishRequest;
 import com.example.DevPlayground.dto.PasskeyRegistrationFinishResponse;
 import com.example.DevPlayground.dto.PasskeyRegistrationStartResponse;
+import com.example.DevPlayground.dto.PasskeyLoginStartResponse;
+import com.example.DevPlayground.dto.PasskeyLoginFinishRequest;
+import com.example.DevPlayground.dto.PasskeyLoginFinishResponse;
 import com.example.DevPlayground.service.PasskeyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -102,6 +105,43 @@ public class LoginController {
         } catch (Exception e) {
             System.err.println("Error finishing passkey registration: " + e.getMessage());
             PasskeyRegistrationFinishResponse errorResponse = new PasskeyRegistrationFinishResponse(false, "Registration failed: " + e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+    }
+
+    @PostMapping("/auth/passkey/login/start")
+    public ResponseEntity<PasskeyLoginStartResponse> startPasskeyLogin(@RequestParam String username) {
+        try {
+            System.out.println("Starting passkey login for user: " + username);
+            PasskeyLoginStartResponse response = passkeyService.startLogin(username);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            System.err.println("Error starting passkey login: " + e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PostMapping("/auth/passkey/login/finish")
+    public ResponseEntity<PasskeyLoginFinishResponse> finishPasskeyLogin(@RequestBody PasskeyLoginFinishRequest request, HttpServletRequest httpRequest) {
+        try {
+            System.out.println("Finishing passkey login for user: " + request.getUsername());
+            PasskeyLoginFinishResponse response = passkeyService.finishLogin(request);
+            
+            if (response.isSuccess()) {
+                // Spring Security認証を設定
+                UsernamePasswordAuthenticationToken authToken = 
+                    new UsernamePasswordAuthenticationToken(response.getUsername(), null, null);
+                SecurityContextHolder.getContext().setAuthentication(authToken);
+                
+                // セッションに保存
+                HttpSession session = httpRequest.getSession(true);
+                session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+            }
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            System.err.println("Error finishing passkey login: " + e.getMessage());
+            PasskeyLoginFinishResponse errorResponse = new PasskeyLoginFinishResponse(false, "Login failed: " + e.getMessage(), null);
             return ResponseEntity.badRequest().body(errorResponse);
         }
     }

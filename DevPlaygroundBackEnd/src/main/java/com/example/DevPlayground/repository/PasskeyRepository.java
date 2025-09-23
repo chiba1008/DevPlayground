@@ -14,6 +14,8 @@ public interface PasskeyRepository extends JpaRepository<Passkey, Long> {
     
     Optional<Passkey> findByCredentialId(String credentialId);
     
+    Optional<Passkey> findByCredentialIdAndUsername(String credentialId, String username);
+    
     boolean existsByCredentialId(String credentialId);
     
     void deleteByUsername(String username);

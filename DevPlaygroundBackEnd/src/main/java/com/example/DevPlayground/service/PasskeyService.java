@@ -3,6 +3,9 @@ package com.example.DevPlayground.service;
 import com.example.DevPlayground.dto.PasskeyRegistrationFinishRequest;
 import com.example.DevPlayground.dto.PasskeyRegistrationFinishResponse;
 import com.example.DevPlayground.dto.PasskeyRegistrationStartResponse;
+import com.example.DevPlayground.dto.PasskeyLoginStartResponse;
+import com.example.DevPlayground.dto.PasskeyLoginFinishRequest;
+import com.example.DevPlayground.dto.PasskeyLoginFinishResponse;
 import com.example.DevPlayground.entity.Passkey;
 import com.example.DevPlayground.entity.PasskeyChallenge;
 import com.example.DevPlayground.entity.Users;
@@ -96,6 +99,72 @@ public class PasskeyService {
         passkeyChallengeRepository.delete(storedChallenge.get());
 
         return new PasskeyRegistrationFinishResponse(true, "Passkey registered successfully");
+    }
+
+    @Transactional
+    public PasskeyLoginStartResponse startLogin(String username) {
+        Users user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found: " + username));
+
+        // ユーザーのPasskeyを取得
+        List<Passkey> userPasskeys = passkeyRepository.findByUsername(username);
+        if (userPasskeys.isEmpty()) {
+            throw new RuntimeException("No passkeys found for user: " + username);
+        }
+
+        // 既存のchallengeを削除
+        passkeyChallengeRepository.deleteByUsername(username);
+        
+        // 新しいchallengeを生成
+        String challenge = generateChallenge();
+        
+        PasskeyChallenge passkeyChallenge = new PasskeyChallenge();
+        passkeyChallenge.setUsername(username);
+        passkeyChallenge.setChallenge(challenge);
+        passkeyChallengeRepository.save(passkeyChallenge);
+
+        // allowCredentialsを作成
+        List<PasskeyLoginStartResponse.AllowCredentials> allowCredentials = userPasskeys.stream()
+                .map(passkey -> new PasskeyLoginStartResponse.AllowCredentials("public-key", passkey.getCredentialId()))
+                .toList();
+
+        return new PasskeyLoginStartResponse(challenge, allowCredentials);
+    }
+
+    @Transactional
+    public PasskeyLoginFinishResponse finishLogin(PasskeyLoginFinishRequest request) {
+        String username = request.getUsername();
+        String challengeFromClient = extractChallengeFromClientData(request.getAuthenticationResponse().getClientDataJSON());
+
+        // challengeを検証
+        Optional<PasskeyChallenge> storedChallenge = passkeyChallengeRepository
+                .findByUsernameAndChallenge(username, challengeFromClient);
+
+        if (storedChallenge.isEmpty()) {
+            return new PasskeyLoginFinishResponse(false, "Invalid challenge", null);
+        }
+
+        // 期限切れチェック
+        if (storedChallenge.get().getExpiresAt().isBefore(LocalDateTime.now())) {
+            passkeyChallengeRepository.delete(storedChallenge.get());
+            return new PasskeyLoginFinishResponse(false, "Challenge expired", null);
+        }
+
+        // credentialIdでPasskeyを検証
+        String credentialId = request.getAuthenticationResponse().getId();
+        Optional<Passkey> passkey = passkeyRepository.findByCredentialIdAndUsername(credentialId, username);
+        
+        if (passkey.isEmpty()) {
+            return new PasskeyLoginFinishResponse(false, "Invalid credential", null);
+        }
+
+        // 実際のプロダクションでは、署名の検証が必要
+        // ここでは簡単な実装として、credentialIdとusernameの一致のみチェック
+
+        // challengeを削除
+        passkeyChallengeRepository.delete(storedChallenge.get());
+
+        return new PasskeyLoginFinishResponse(true, "Login successful", username);
     }
 
     @Transactional

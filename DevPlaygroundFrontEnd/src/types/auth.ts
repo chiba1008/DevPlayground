@@ -54,6 +54,32 @@ export interface PasskeyRegistrationFinishResponse {
     message: string
 }
 
+export interface PasskeyLoginStartResponse {
+    challenge: string
+    allowCredentials: Array<{
+        type: string
+        id: string
+    }>
+}
+
+export interface PasskeyLoginFinishRequest {
+    username: string
+    authenticationResponse: {
+        id: string
+        rawId: string
+        type: string
+        clientDataJSON: string
+        authenticatorData: string
+        signature: string
+    }
+}
+
+export interface PasskeyLoginFinishResponse {
+    success: boolean
+    message: string
+    username: string | null
+}
+
 export interface UserInfo {
     username: string
     authorities: string
