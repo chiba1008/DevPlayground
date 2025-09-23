@@ -33,7 +33,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
 import type { LoginRequest } from '@/types/auth'
-import '../styles/components/HelloManager.css'
+import '../styles/components/home.css'
 
 const { isAuthenticated, user, loading, login, logout, checkAuthStatus } = useAuth()
 const router = useRouter()

@@ -1,11 +1,10 @@
 <template>
     <div class="todo-container">
-        <div class="todo-header">
+        <div class="page-header">
             <h1>Todo Manager</h1>
-            <p>タスクを管理して生産性を向上させましょう</p>
-
+            <p>タスクの作成、管理、進捗追跡を効率的に行えます</p>
             <!-- View Tabs -->
-            <div class="view-tabs">
+            <div class="header-tabs">
                 <button
                     @click="setActiveView('list')"
                     :class="['tab-btn', { active: activeView === 'list' }]"
@@ -154,158 +153,7 @@ onMounted(async () => {
 })
 </script>
 
-<style scoped>
-.todo-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-.todo-header {
-    text-align: center;
-    margin-bottom: 40px;
-    padding: 40px 20px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border-radius: 12px;
-}
-
-.todo-header h1 {
-    font-size: 2.5rem;
-    margin-bottom: 10px;
-    font-weight: 600;
-}
-
-.todo-header p {
-    font-size: 1.2rem;
-    opacity: 0.9;
-    margin-bottom: 20px;
-}
-
-.view-tabs {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-}
-
-.tab-btn {
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-weight: 500;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.tab-btn:hover {
-    background: rgba(255, 255, 255, 0.3);
-    border-color: rgba(255, 255, 255, 0.5);
-}
-
-.tab-btn.active {
-    background: rgba(255, 255, 255, 0.9);
-    color: #667eea;
-    border-color: rgba(255, 255, 255, 0.9);
-    font-weight: 600;
-}
-
-.todo-content {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 30px;
-    margin-bottom: 20px;
-}
-
-.todo-section {
-    background: white;
-    border: 1px solid #ddd;
-    border-radius: 12px;
-    padding: 30px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.todo-section h2 {
-    color: #2c3e50;
-    margin-bottom: 20px;
-    font-size: 1.5rem;
-}
-
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.section-header h2 {
-    margin: 0;
-}
-
-.btn {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: all 0.3s ease;
-}
-
-.btn-refresh {
-    background-color: #28a745;
-    color: white;
-    font-size: 14px;
-}
-
-.btn-refresh:hover:not(:disabled) {
-    background-color: #218838;
-}
-
-.btn-refresh:disabled {
-    background-color: #6c757d;
-    cursor: not-allowed;
-}
-
-.error-message {
-    margin-top: 20px;
-    padding: 15px;
-    background-color: #f8d7da;
-    border: 1px solid #f5c6cb;
-    border-radius: 8px;
-    color: #721c24;
-}
-
-.loading-user {
-    text-align: center;
-    padding: 20px;
-    color: #6c757d;
-    font-style: italic;
-}
-
-@media (max-width: 768px) {
-    .todo-container {
-        padding: 10px;
-    }
-
-    .todo-content {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-
-    .todo-section {
-        padding: 20px;
-    }
-
-    .todo-header h1 {
-        font-size: 2rem;
-    }
-
-    .section-header {
-        flex-direction: column;
-        gap: 10px;
-        align-items: stretch;
-    }
-}
+<style>
+@import '@/styles/components/common.css';
+@import '@/styles/components/todo.css';
 </style>

@@ -1,0 +1,119 @@
+/* ボタンスタイルはglobal.cssで統一管理 */
+
+.btn-refresh {
+  background-color: #28a745;
+  color: white;
+  font-size: 14px;
+}
+
+.btn-refresh:hover:not(:disabled) {
+  background-color: #218838;
+}
+
+.btn-refresh:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.btn-create {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-create:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+.btn-update {
+  background-color: #667eea;
+  color: white;
+}
+
+.btn-update:hover:not(:disabled) {
+  background-color: #5a6fd8;
+}
+
+.btn-update:disabled {
+  background-color: #bdc3c7;
+  cursor: not-allowed;
+}
+
+/* 共通メッセージスタイル */
+.error-message {
+  padding: 15px;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 8px;
+  color: #721c24;
+  margin-top: 20px;
+}
+
+.success-message {
+  padding: 12px;
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+  border-radius: 6px;
+  color: #155724;
+  font-size: 14px;
+}
+
+.warning-message {
+  padding: 12px;
+  background-color: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 6px;
+  color: #856404;
+  font-size: 14px;
+}
+
+/* 共通ローディング */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.loading-spinner {
+  background: white;
+  padding: 20px 40px;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+/* ステータスバッジはglobal.cssで統一管理 */
+
+/* フォームスタイルとヘッダースタイルはglobal.cssで統一管理 */
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .btn {
+    width: 100%;
+    padding: 10px 20px;
+  }
+
+  .gradient-header h1 {
+    font-size: 2rem;
+  }
+
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    font-size: 16px; /* iOSズーム防止 */
+  }
+}

@@ -1,8 +1,8 @@
 <template>
   <div class="create-user">
-    <div class="create-user-section">
+    <div class="page-header">
       <h1>Create New User</h1>
-      <p>Add a new user to the system</p>
+      <p>新しいユーザーをシステムに追加します</p>
     </div>
 
     <div class="form-container">
