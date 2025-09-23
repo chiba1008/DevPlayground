@@ -1,5 +1,5 @@
 import { HttpClient } from './http'
-import type { LoginRequest, LoginResponse, PasskeyLoginRequest, PasskeyLoginResponse, PasskeyRegistrationStartRequest, PasskeyRegistrationStartResponse, UserInfo } from '@/types/auth'
+import type { LoginRequest, LoginResponse, PasskeyLoginRequest, PasskeyLoginResponse, PasskeyRegistrationStartResponse, PasskeyRegistrationFinishRequest, PasskeyRegistrationFinishResponse, UserInfo } from '@/types/auth'
 
 class AuthApi {
     private httpClient: HttpClient
@@ -16,12 +16,17 @@ class AuthApi {
         return this.httpClient.post<PasskeyLoginResponse>('/passkey-login', credentials)
     }
 
-    async registerPasskeyStart(
-        passkeyRegistrationStartRequest: PasskeyRegistrationStartRequest,
-    ): Promise<PasskeyRegistrationStartResponse> {
+    async registerPasskeyStart(username: string): Promise<PasskeyRegistrationStartResponse> {
         return this.httpClient.post<PasskeyRegistrationStartResponse>(
-            '/passkey/register-start',
-            passkeyRegistrationStartRequest,
+            `/auth/passkey/register/start?username=${encodeURIComponent(username)}`,
+            {},
+        )
+    }
+
+    async registerPasskeyFinish(request: PasskeyRegistrationFinishRequest): Promise<PasskeyRegistrationFinishResponse> {
+        return this.httpClient.post<PasskeyRegistrationFinishResponse>(
+            '/auth/passkey/register/finish',
+            request,
         )
     }
 

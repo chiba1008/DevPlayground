@@ -18,17 +18,12 @@ import { ref, computed } from 'vue'
 import { authApi } from '@/services/authApi'
 import { useAuth } from '@/composables/useAuth'
 import type {
-    PasskeyRegistrationStartRequest,
     PasskeyRegistrationStartResponse,
 } from '@/types/auth'
 import '@/styles/components/home.css'
 
 const { user } = useAuth()
 const userName = computed(() => user.value?.username || '')
-
-const passkeyRegistrationStartRequest = ref<PasskeyRegistrationStartRequest>({
-    username: '',
-})
 
 const passkeyRegistrationStartResponse = ref<PasskeyRegistrationStartResponse | null>(null)
 const loading = ref(false)
@@ -41,22 +36,29 @@ const showError = (message: string) => {
     }, 5000)
 }
 
+const base64UrlDecode = (str: string): Uint8Array => {
+    const base64 = str.replace(/-/g, '+').replace(/_/g, '/')
+    const padding = '='.repeat((4 - (base64.length % 4)) % 4)
+    const decoded = atob(base64 + padding)
+    return Uint8Array.from(decoded, c => c.charCodeAt(0))
+}
+
+const base64UrlEncode = (buffer: ArrayBuffer): string => {
+    const bytes = new Uint8Array(buffer)
+    const base64 = btoa(String.fromCharCode(...bytes))
+    return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '')
+}
+
 const registerPasskey = async () => {
     loading.value = true
     try {
-        passkeyRegistrationStartRequest.value.username = userName.value
         // challenge等を受け取る
-        passkeyRegistrationStartResponse.value = await authApi.registerPasskeyStart(
-            passkeyRegistrationStartRequest.value,
-        )
+        passkeyRegistrationStartResponse.value = await authApi.registerPasskeyStart(userName.value)
 
         navigator.credentials
             .create({
                 publicKey: {
-                    challenge: Uint8Array.from(
-                        atob(passkeyRegistrationStartResponse.value.challenge),
-                        (c) => c.charCodeAt(0),
-                    ),
+                    challenge: base64UrlDecode(passkeyRegistrationStartResponse.value.challenge),
                     rp: {
                         id: passkeyRegistrationStartResponse.value.rp.id,
                         name: passkeyRegistrationStartResponse.value.rp.name,
@@ -83,12 +85,10 @@ const registerPasskey = async () => {
 
                 const registrationResponse = {
                     id: credential.id,
-                    rawId: btoa(String.fromCharCode(...new Uint8Array(credential.rawId))),
+                    rawId: base64UrlEncode(credential.rawId),
                     type: credential.type,
-                    clientDataJSON: btoa(String.fromCharCode(...new Uint8Array(clientDataJSON))),
-                    attestationObject: btoa(
-                        String.fromCharCode(...new Uint8Array(attestationObject)),
-                    ),
+                    clientDataJSON: base64UrlEncode(clientDataJSON),
+                    attestationObject: base64UrlEncode(attestationObject),
                 }
 
                 // サーバーに登録情報を送信

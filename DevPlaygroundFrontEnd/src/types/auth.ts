@@ -38,6 +38,22 @@ export interface PasskeyRegistrationStartResponse {
     }>
 }
 
+export interface PasskeyRegistrationFinishRequest {
+    username: string
+    registrationResponse: {
+        id: string
+        rawId: string
+        type: string
+        clientDataJSON: string
+        attestationObject: string
+    }
+}
+
+export interface PasskeyRegistrationFinishResponse {
+    success: boolean
+    message: string
+}
+
 export interface UserInfo {
     username: string
     authorities: string

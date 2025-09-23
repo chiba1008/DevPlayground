@@ -1,83 +1,124 @@
 package com.example.DevPlayground.service;
 
-import com.webauthn4j.data.PublicKeyCredentialRpEntity;
-import com.webauthn4j.data.PublicKeyCredentialUserEntity;
-import com.webauthn4j.data.client.challenge.DefaultChallenge;
+import com.example.DevPlayground.dto.PasskeyRegistrationFinishRequest;
+import com.example.DevPlayground.dto.PasskeyRegistrationFinishResponse;
+import com.example.DevPlayground.dto.PasskeyRegistrationStartResponse;
+import com.example.DevPlayground.entity.Passkey;
+import com.example.DevPlayground.entity.PasskeyChallenge;
+import com.example.DevPlayground.entity.Users;
+import com.example.DevPlayground.repository.PasskeyChallengeRepository;
+import com.example.DevPlayground.repository.PasskeyRepository;
+import com.example.DevPlayground.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class PasskeyService {
 
-    public static class PasskeyRegistrationStartResponse {
-        public String challenge;
-        public Rp rp;
-        public User user;
-        public List<PubKeyCredParam> pubKeyCredParams;
-        public PasskeyRegistrationStartResponse(String challenge, Rp rp, User user, List<PubKeyCredParam> pubKeyCredParams) {
-            this.challenge = challenge;
-            this.rp = rp;
-            this.user = user;
-            this.pubKeyCredParams = pubKeyCredParams;
-        }
-        public static class Rp {
-            public String id;
-            public String name;
-            public Rp(String id, String name) {
-                this.id = id;
-                this.name = name;
-            }
-        }
-        public static class User {
-            public String id;
-            public String name;
-            public String displayName;
-            public User(String id, String name, String displayName) {
-                this.id = id;
-                this.name = name;
-                this.displayName = displayName;
-            }
-        }
-        public static class PubKeyCredParam {
-            public String type;
-            public int alg;
-            public PubKeyCredParam(String type, int alg) {
-                this.type = type;
-                this.alg = alg;
-            }
-        }
+    private final PasskeyChallengeRepository passkeyChallengeRepository;
+    private final PasskeyRepository passkeyRepository;
+    private final UserRepository userRepository;
+    private final SecureRandom secureRandom = new SecureRandom();
+
+    @Transactional
+    public PasskeyRegistrationStartResponse startRegistration(String username) {
+        Users user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found: " + username));
+
+        // 既存のchallengeを削除
+        passkeyChallengeRepository.deleteByUsername(username);
+        
+        // 新しいchallengeを生成
+        String challenge = generateChallenge();
+        
+        PasskeyChallenge passkeyChallenge = new PasskeyChallenge();
+        passkeyChallenge.setUsername(username);
+        passkeyChallenge.setChallenge(challenge);
+        passkeyChallengeRepository.save(passkeyChallenge);
+
+        // WebAuthn registrationオプションを返す
+        return new PasskeyRegistrationStartResponse(
+                challenge,
+                new PasskeyRegistrationStartResponse.RelyingParty("localhost", "DevPlayground"),
+                new PasskeyRegistrationStartResponse.User(
+                        user.getId().toString(),
+                        user.getUsername(),
+                        user.getUsername()
+                ),
+                List.of(
+                        new PasskeyRegistrationStartResponse.PublicKeyCredentialParameters("public-key", -7), // ES256
+                        new PasskeyRegistrationStartResponse.PublicKeyCredentialParameters("public-key", -257) // RS256
+                )
+        );
     }
 
-    public PasskeyRegistrationStartResponse registerPasskeyStart(String userName) {
-        // チャレンジを発行
-        DefaultChallenge challenge = new DefaultChallenge();
-        String challengeBase64 = Base64.getEncoder().encodeToString(challenge.getValue());
-        PublicKeyCredentialRpEntity rpEntity = new PublicKeyCredentialRpEntity(
-                "localhost",
-                "Example App"
-        );
+    @Transactional
+    public PasskeyRegistrationFinishResponse finishRegistration(PasskeyRegistrationFinishRequest request) {
+        String username = request.getUsername();
+        String challengeFromClient = extractChallengeFromClientData(request.getRegistrationResponse().getClientDataJSON());
 
-        PublicKeyCredentialUserEntity userEntity = new PublicKeyCredentialUserEntity(
-                userName.getBytes(), // 後でUserIdにする
-                userName,
-                userName
-        );
+        // challengeを検証
+        Optional<PasskeyChallenge> storedChallenge = passkeyChallengeRepository
+                .findByUsernameAndChallenge(username, challengeFromClient);
 
-        List<PasskeyRegistrationStartResponse.PubKeyCredParam> pubKeyCredParams = List.of(
-                new PasskeyRegistrationStartResponse.PubKeyCredParam("public-key", -7),
-                new PasskeyRegistrationStartResponse.PubKeyCredParam("public-key", -257)
-        );
-        return new PasskeyRegistrationStartResponse(
-                challengeBase64,
-                new PasskeyRegistrationStartResponse.Rp(rpEntity.getId(), rpEntity.getName()),
-                new PasskeyRegistrationStartResponse.User(
-                        Base64.getEncoder().encodeToString(userEntity.getId()),
-                        userEntity.getName(),
-                        userEntity.getDisplayName()
-                ),
-                pubKeyCredParams
-        );
+        if (storedChallenge.isEmpty()) {
+            return new PasskeyRegistrationFinishResponse(false, "Invalid challenge");
+        }
+
+        // 期限切れチェック
+        if (storedChallenge.get().getExpiresAt().isBefore(LocalDateTime.now())) {
+            passkeyChallengeRepository.delete(storedChallenge.get());
+            return new PasskeyRegistrationFinishResponse(false, "Challenge expired");
+        }
+
+        Users user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found: " + username));
+
+        // Passkeyを保存
+        Passkey passkey = new Passkey();
+        passkey.setUsername(username);
+        passkey.setCredentialId(request.getRegistrationResponse().getId());
+        passkey.setPublicKey(request.getRegistrationResponse().getAttestationObject());
+        passkey.setAttestationObject(request.getRegistrationResponse().getAttestationObject());
+        passkey.setClientDataJSON(request.getRegistrationResponse().getClientDataJSON());
+        passkey.setSignatureCount(0L);
+        passkeyRepository.save(passkey);
+
+        // challengeを削除
+        passkeyChallengeRepository.delete(storedChallenge.get());
+
+        return new PasskeyRegistrationFinishResponse(true, "Passkey registered successfully");
+    }
+
+    @Transactional
+    public void cleanupExpiredChallenges() {
+        passkeyChallengeRepository.deleteExpiredChallenges(LocalDateTime.now());
+    }
+
+    private String generateChallenge() {
+        byte[] challengeBytes = new byte[32];
+        secureRandom.nextBytes(challengeBytes);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(challengeBytes);
+    }
+
+    private String extractChallengeFromClientData(String clientDataJSON) {
+        try {
+            String decodedClientData = new String(Base64.getUrlDecoder().decode(clientDataJSON));
+            // 簡単なJSON解析（実際のプロダクションではJSONライブラリを使用）
+            String challengePrefix = "\"challenge\":\"";
+            int startIndex = decodedClientData.indexOf(challengePrefix) + challengePrefix.length();
+            int endIndex = decodedClientData.indexOf("\"", startIndex);
+            return decodedClientData.substring(startIndex, endIndex);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to extract challenge from client data", e);
+        }
     }
 }
