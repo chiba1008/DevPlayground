@@ -23,7 +23,7 @@ import { ref } from 'vue'
 import { HelloApi } from '@/services/helloApi'
 import { HttpClient } from '@/services/http'
 import type { HelloResponse } from '@/types/api'
-import '../styles/components/HelloManager.css'
+import '@/styles/components/home.css'
 
 const httpClient = new HttpClient()
 const helloApi = new HelloApi(httpClient)

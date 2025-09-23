@@ -1,0 +1,61 @@
+.error-content {
+    text-align: center;
+    background: white;
+    border-radius: 16px;
+    padding: 60px 40px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    width: 100%;
+}
+
+.error-icon {
+    margin-bottom: 30px;
+}
+
+.error-message h1 {
+    font-size: 2.5rem;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.error-message p {
+    font-size: 1.1rem;
+    color: #7f8c8d;
+    margin-bottom: 15px;
+    line-height: 1.6;
+}
+
+.error-actions {
+    margin-top: 40px;
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* ボタンスタイルはglobal.cssで統一管理 */
+
+@media (max-width: 768px) {
+    .error-content {
+        padding: 40px 20px;
+    }
+
+    .error-number {
+        font-size: 6rem;
+    }
+
+    .error-message h1 {
+        font-size: 2rem;
+    }
+
+    .error-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .btn {
+        width: 100%;
+        max-width: 300px;
+    }
+}

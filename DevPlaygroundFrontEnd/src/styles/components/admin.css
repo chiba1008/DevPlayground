@@ -1,0 +1,51 @@
+.admin {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.admin-section {
+    text-align: center;
+    margin-bottom: 40px;
+    padding: 30px;
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    color: white;
+    border-radius: 12px;
+}
+
+.admin-section h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.admin-section p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+.admin-functions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.function-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.function-card h3 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.function-card p {
+    color: #666;
+    margin-bottom: 15px;
+}
+
+/* ボタンスタイルはglobal.cssで統一管理 */

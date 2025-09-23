@@ -33,7 +33,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
 import type { LoginRequest } from '@/types/auth'
-import '../styles/components/HelloManager.css'
+import '../styles/components/home.css'
 
 const { isAuthenticated, user, loading, login, logout, checkAuthStatus } = useAuth()
 const router = useRouter()
@@ -98,36 +98,5 @@ const showError = (message: string) => {
     margin-bottom: 15px;
 }
 
-.error {
-    color: #e74c3c;
-    margin-top: 10px;
-    padding: 10px;
-    background-color: #fdf2f2;
-    border-radius: 4px;
-    border: 1px solid #fecaca;
-}
-
-.loading {
-    color: #3498db;
-    margin-top: 10px;
-    text-align: center;
-}
-
-button {
-    background-color: #3498db;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-button:disabled {
-    background-color: #bdc3c7;
-    cursor: not-allowed;
-}
-
-button:hover:not(:disabled) {
-    background-color: #2980b9;
-}
+/* エラー、ローディング、ボタンスタイルはglobal.cssで統一管理 */
 </style>

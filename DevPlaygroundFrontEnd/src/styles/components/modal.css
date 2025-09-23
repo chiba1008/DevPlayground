@@ -1,0 +1,162 @@
+/* Modal 共通スタイル */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-modal);
+  padding: var(--spacing-lg);
+}
+
+.modal-content {
+  background: var(--bg-white);
+  border-radius: var(--border-radius-lg);
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-xl);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-xl) var(--spacing-xl) 0 var(--spacing-xl);
+  margin-bottom: var(--spacing-lg);
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: var(--spacing-xl);
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.close-btn:hover {
+  background: var(--gray-50);
+  color: var(--text-secondary);
+}
+
+.modal-form {
+  padding: 0 var(--spacing-xl) var(--spacing-xl) var(--spacing-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.modal-body {
+  padding: 0 var(--spacing-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.modal-footer {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: flex-end;
+  padding: var(--spacing-lg) var(--spacing-xl) var(--spacing-xl) var(--spacing-xl);
+}
+
+/* Todo詳細モーダル用 */
+.detail-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.detail-section label {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  font-size: var(--font-size-base);
+}
+
+.detail-value {
+  padding: var(--spacing-md);
+  background: var(--gray-50);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--gray-300);
+  color: var(--gray-700);
+}
+
+.detail-value.description {
+  white-space: pre-wrap;
+  line-height: var(--line-height-relaxed);
+}
+
+.status-controls {
+  display: flex;
+  gap: var(--spacing-md);
+  align-items: center;
+}
+
+.status-select {
+  flex: 1;
+  padding: var(--spacing-xs);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-base);
+  background: var(--bg-white);
+}
+
+.status-select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px var(--primary-light);
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .modal-overlay {
+    padding: var(--spacing-xs);
+  }
+
+  .modal-content {
+    max-height: 95vh;
+    max-width: 600px;
+  }
+
+  .modal-header {
+    padding: var(--spacing-lg) var(--spacing-lg) 0 var(--spacing-lg);
+  }
+
+  .modal-form {
+    padding: 0 var(--spacing-lg) var(--spacing-lg) var(--spacing-lg);
+  }
+
+  .modal-body {
+    padding: 0 var(--spacing-lg);
+  }
+
+  .modal-footer {
+    padding: var(--spacing-lg);
+    flex-direction: column;
+  }
+
+  .status-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
