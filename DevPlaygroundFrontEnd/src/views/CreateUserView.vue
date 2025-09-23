@@ -132,142 +132,34 @@ const goBack = () => {
 </script>
 
 <style scoped>
+/* global.cssのデザインシステムを使用 */
 .create-user {
   max-width: 600px;
   margin: 0 auto;
-  padding: 20px;
-}
-
-.create-user-section {
-  text-align: center;
-  margin-bottom: 40px;
-  padding: 30px;
-  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
-  color: white;
-  border-radius: 12px;
-}
-
-.create-user-section h1 {
-  font-size: 2.5rem;
-  margin-bottom: 10px;
-  font-weight: 600;
-}
-
-.create-user-section p {
-  font-size: 1.2rem;
-  opacity: 0.9;
+  padding: var(--spacing-lg);
 }
 
 .form-container {
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 30px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  background: var(--bg-white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-2xl);
+  box-shadow: var(--shadow-md);
 }
 
 .create-user-form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.form-group label {
-  font-weight: 500;
-  color: #2c3e50;
-}
-
-.form-group input,
-.form-group select {
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 16px;
-}
-
-.form-group input:focus,
-.form-group select:focus {
-  outline: none;
-  border-color: #3498db;
-  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
-}
-
-.form-actions {
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-  margin-top: 20px;
-}
-
-.btn {
-  padding: 12px 24px;
-  border: none;
-  border-radius: 4px;
-  font-weight: 500;
-  cursor: pointer;
-  text-decoration: none;
-  display: inline-block;
-  transition: background-color 0.3s ease;
-}
-
-.btn-primary {
-  background-color: #3498db;
-  color: white;
-}
-
-.btn-primary:hover:not(:disabled) {
-  background-color: #2980b9;
-}
-
-.btn-primary:disabled {
-  background-color: #bdc3c7;
-  cursor: not-allowed;
-}
-
-.btn-secondary {
-  background-color: #95a5a6;
-  color: white;
-}
-
-.btn-secondary:hover {
-  background-color: #7f8c8d;
-}
-
-.error-message {
-  margin-top: 20px;
-  padding: 15px;
-  background-color: #fdf2f2;
-  border: 1px solid #fecaca;
-  border-radius: 4px;
-  color: #e74c3c;
-}
-
-.success-message {
-  margin-top: 20px;
-  padding: 15px;
-  background-color: #f0fdf4;
-  border: 1px solid #bbf7d0;
-  border-radius: 4px;
-  color: #16a085;
+  gap: var(--spacing-lg);
 }
 
 @media (max-width: 768px) {
   .create-user {
-    padding: 10px;
+    padding: var(--spacing-xs);
   }
   
   .form-container {
-    padding: 20px;
-  }
-  
-  .form-actions {
-    flex-direction: column;
+    padding: var(--spacing-lg);
   }
 }
 </style>
