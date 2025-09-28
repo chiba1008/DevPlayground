@@ -20,12 +20,35 @@ jobs:
           distribution: "temurin"
           java-version: "21"
 
+      - name: Cache Node modules
+        uses: actions/cache@v4
+        with:
+          path: DevPlaygroundFrontEnd/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
       - name: Install frontend dependencies
         working-directory: ./DevPlaygroundFrontEnd
         run: npm ci
 
+      - name: Get installed Playwright version
+        id: playwright-version
+        working-directory: ./DevPlaygroundFrontEnd
+        run: echo "PLAYWRIGHT_VERSION=$(npm list @playwright/test --depth=0 --json | jq -r '.dependencies["@playwright/test"].version')" >> $GITHUB_OUTPUT
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.PLAYWRIGHT_VERSION }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+
       - name: Install Playwright Browsers
         working-directory: ./DevPlaygroundFrontEnd
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
 
       - name: Build frontend
