@@ -147,14 +147,15 @@ const loginWithPasskey = async () => {
             return
         }
 
-        const assertionResponse = credential.response as AuthenticatorAssertionResponse
+        const publicKeyCredential = credential as PublicKeyCredential
+        const assertionResponse = publicKeyCredential.response as AuthenticatorAssertionResponse
         const clientDataJSON = assertionResponse.clientDataJSON
         const authenticatorData = assertionResponse.authenticatorData
         const signature = assertionResponse.signature
 
         const authenticationResponse = {
-            id: credential.id,
-            rawId: base64UrlEncode(credential.rawId),
+            id: publicKeyCredential.id,
+            rawId: base64UrlEncode(publicKeyCredential.rawId),
             type: credential.type,
             clientDataJSON: base64UrlEncode(clientDataJSON),
             authenticatorData: base64UrlEncode(authenticatorData),

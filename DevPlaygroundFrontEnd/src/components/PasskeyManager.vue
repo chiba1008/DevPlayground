@@ -61,7 +61,7 @@ const registerPasskey = async () => {
                         name: userName.value,
                         displayName: userName.value,
                     },
-                    pubKeyCredParams: passkeyRegistrationStartResponse.value.pubKeyCredParams,
+                    pubKeyCredParams: passkeyRegistrationStartResponse.value.pubKeyCredParams as PublicKeyCredentialParameters[],
                     timeout: 60000,
                     attestation: 'direct',
                 },
@@ -72,13 +72,14 @@ const registerPasskey = async () => {
                     return
                 }
 
-                const attestationResponse = credential.response as AuthenticatorAttestationResponse
+                const publicKeyCredential = credential as PublicKeyCredential
+                const attestationResponse = publicKeyCredential.response as AuthenticatorAttestationResponse
                 const clientDataJSON = attestationResponse.clientDataJSON
                 const attestationObject = attestationResponse.attestationObject
 
                 const registrationResponse = {
-                    id: credential.id,
-                    rawId: base64UrlEncode(credential.rawId),
+                    id: publicKeyCredential.id,
+                    rawId: base64UrlEncode(publicKeyCredential.rawId),
                     type: credential.type,
                     clientDataJSON: base64UrlEncode(clientDataJSON),
                     attestationObject: base64UrlEncode(attestationObject),

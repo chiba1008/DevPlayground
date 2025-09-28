@@ -33,6 +33,10 @@ class UserApi {
   async deleteUser(id: number): Promise<void> {
     return this.httpClient.delete<void>(`/admin/users/${id}`)
   }
+
+  async getUserByUsername(username: string): Promise<UserResponse> {
+    return this.httpClient.get<UserResponse>(`/admin/users/search?username=${username}`)
+  }
 }
 
 export const userApi = new UserApi()
