@@ -1,17 +1,11 @@
 <template>
     <div class="hello-manager">
         <h2>Passkey管理</h2>
-        
+
         <!-- Passkey Registration -->
         <section class="api-test">
             <button @click="registerPasskey" :disabled="loading">Passkey登録</button>
         </section>
-
-        <!-- Error Display -->
-        <div v-if="error" class="error"><strong>Error:</strong> {{ error }}</div>
-
-        <!-- Success Display -->
-        <div v-if="success" class="success"><strong>Success:</strong> {{ success }}</div>
 
         <!-- Loading Indicator -->
         <div v-if="loading" class="loading">Loading...</div>
@@ -32,24 +26,6 @@ const userName = computed(() => user.value?.username || '')
 
 const passkeyRegistrationStartResponse = ref<PasskeyRegistrationStartResponse | null>(null)
 const loading = ref(false)
-const error = ref('')
-const success = ref('')
-
-const showError = (message: string) => {
-    error.value = message
-    success.value = ''
-    setTimeout(() => {
-        error.value = ''
-    }, 5000)
-}
-
-const showSuccess = (message: string) => {
-    success.value = message
-    error.value = ''
-    setTimeout(() => {
-        success.value = ''
-    }, 5000)
-}
 
 const base64UrlDecode = (str: string): Uint8Array => {
     const base64 = str.replace(/-/g, '+').replace(/_/g, '/')
@@ -67,9 +43,11 @@ const base64UrlEncode = (buffer: ArrayBuffer): string => {
 const registerPasskey = async () => {
     loading.value = true
     try {
-        // challenge等を受け取る
+        // userNameを使ってchallenge等を受け取る
         passkeyRegistrationStartResponse.value = await authApi.registerPasskeyStart(userName.value)
 
+        // 受け取ったchallenge等を使ってCredentialを作成
+        // WebAuthn APIを使用してパスキーを生成
         navigator.credentials
             .create({
                 publicKey: {
@@ -90,7 +68,7 @@ const registerPasskey = async () => {
             })
             .then(async (credential) => {
                 if (!credential) {
-                    showError('Credential creation was not completed.')
+                    alert('Credential creation was not completed.')
                     return
                 }
 
@@ -112,18 +90,16 @@ const registerPasskey = async () => {
                         username: userName.value,
                         registrationResponse,
                     })
-                    showSuccess('Passkey registration successful!')
+                    alert('Passkey registration successful!')
                 } catch (err) {
-                    showError(
-                        err instanceof Error ? err.message : 'Failed to register passkey on server',
-                    )
+                    alert(err instanceof Error ? err.message : 'Failed to register passkey on server')
                 }
             })
             .catch((err) => {
-                showError(err instanceof Error ? err.message : 'Failed to create credentials')
+                alert(err instanceof Error ? err.message : 'Failed to create credential')
             })
     } catch (err) {
-        showError(err instanceof Error ? err.message : 'Failed to connect to API')
+        alert(err instanceof Error ? err.message : 'Failed to connect to API')
     } finally {
         loading.value = false
     }
