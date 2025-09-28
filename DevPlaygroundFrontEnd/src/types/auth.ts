@@ -1,21 +1,93 @@
 export interface LoginRequest {
-  username: string
-  password: string
+    username: string
+    password: string
 }
 
 export interface LoginResponse {
-  success: boolean
-  username: string
+    success: boolean
+    username: string
+}
+
+export interface PasskeyLoginRequest {
+    username: string
+}
+
+export interface PasskeyLoginResponse {
+    success: boolean
+    username: string
+}
+
+export interface PasskeyRegistrationStartRequest {
+    username: string
+}
+
+export interface PasskeyRegistrationStartResponse {
+    challenge: string
+    rp: {
+        id: string
+        name: string
+    }
+    user: {
+        id: string
+        name: string
+        displayName: string
+    }
+    pubKeyCredParams: Array<{
+        type: string
+        alg: number
+    }>
+}
+
+export interface PasskeyRegistrationFinishRequest {
+    username: string
+    registrationResponse: {
+        id: string
+        rawId: string
+        type: string
+        clientDataJSON: string
+        attestationObject: string
+    }
+}
+
+export interface PasskeyRegistrationFinishResponse {
+    success: boolean
+    message: string
+}
+
+export interface PasskeyLoginStartResponse {
+    challenge: string
+    allowCredentials: Array<{
+        type: string
+        id: string
+    }>
+}
+
+export interface PasskeyLoginFinishRequest {
+    username: string
+    authenticationResponse: {
+        id: string
+        rawId: string
+        type: string
+        clientDataJSON: string
+        authenticatorData: string
+        signature: string
+    }
+}
+
+export interface PasskeyLoginFinishResponse {
+    success: boolean
+    message: string
+    username: string | null
 }
 
 export interface UserInfo {
-  username: string
-  authorities: string
-  roles: string[]
+    username: string
+    authorities: string
+    roles: string[]
 }
 
 export interface AuthState {
-  isAuthenticated: boolean
-  user: UserInfo | null
-  loading: boolean
+    isAuthenticated: boolean
+    user: UserInfo | null
+    loading: boolean
 }
