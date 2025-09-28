@@ -1,17 +1,14 @@
 package com.example.DevPlayground.service;
 
-import com.example.DevPlayground.dto.PasskeyRegistrationFinishRequest;
-import com.example.DevPlayground.dto.PasskeyRegistrationFinishResponse;
-import com.example.DevPlayground.dto.PasskeyRegistrationStartResponse;
-import com.example.DevPlayground.dto.PasskeyLoginStartResponse;
-import com.example.DevPlayground.dto.PasskeyLoginFinishRequest;
-import com.example.DevPlayground.dto.PasskeyLoginFinishResponse;
+import com.example.DevPlayground.dto.*;
 import com.example.DevPlayground.entity.Passkey;
 import com.example.DevPlayground.entity.PasskeyChallenge;
 import com.example.DevPlayground.entity.Users;
 import com.example.DevPlayground.repository.PasskeyChallengeRepository;
 import com.example.DevPlayground.repository.PasskeyRepository;
 import com.example.DevPlayground.repository.UserRepository;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +19,9 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Passkeyに関するサービス
+ */
 @Service
 @RequiredArgsConstructor
 public class PasskeyService {
@@ -29,8 +29,17 @@ public class PasskeyService {
     private final PasskeyChallengeRepository passkeyChallengeRepository;
     private final PasskeyRepository passkeyRepository;
     private final UserRepository userRepository;
+    private final ObjectMapper objectMapper;
     private final SecureRandom secureRandom = new SecureRandom();
 
+    /**
+     * Passkey登録の開始
+     * usernameを受け取り、challengeを生成してDBに保存し、
+     * WebAuthnの登録オプションを返す
+     *
+     * @param username ユーザー名
+     * @return PasskeyRegistrationStartResponse
+     */
     @Transactional
     public PasskeyRegistrationStartResponse startRegistration(String username) {
         Users user = userRepository.findByUsername(username)
@@ -63,6 +72,14 @@ public class PasskeyService {
         );
     }
 
+    /**
+     * Passkey登録の完了
+     * クライアントからのレスポンスを受け取り、challengeを検証し、
+     * PasskeyをDBに保存する
+     *
+     * @param request PasskeyRegistrationFinishRequest
+     * @return PasskeyRegistrationFinishResponse
+     */
     @Transactional
     public PasskeyRegistrationFinishResponse finishRegistration(PasskeyRegistrationFinishRequest request) {
         String username = request.getUsername();
@@ -158,34 +175,54 @@ public class PasskeyService {
             return new PasskeyLoginFinishResponse(false, "Invalid credential", null);
         }
 
-        // 実際のプロダクションでは、署名の検証が必要
-        // ここでは簡単な実装として、credentialIdとusernameの一致のみチェック
-
         // challengeを削除
         passkeyChallengeRepository.delete(storedChallenge.get());
 
         return new PasskeyLoginFinishResponse(true, "Login successful", username);
     }
 
+    /**
+     * 期限切れのchallengeを定期的にクリーンアップ
+     * TODO Springのスケジューラー等でN時間に1回実行するように設定
+     */
     @Transactional
     public void cleanupExpiredChallenges() {
         passkeyChallengeRepository.deleteExpiredChallenges(LocalDateTime.now());
     }
 
+    /**
+     * ランダムなchallengeを生成
+     *
+     * @return 生成されたchallenge文字列
+     */
     private String generateChallenge() {
         byte[] challengeBytes = new byte[32];
         secureRandom.nextBytes(challengeBytes);
         return Base64.getUrlEncoder().withoutPadding().encodeToString(challengeBytes);
     }
 
+    /**
+     * ClientDataJSONからchallengeを抽出
+     * Base64デコード後、JacksonでJSONをパースしてchallengeフィールドを取得
+     *
+     * @param clientDataJSON Base64エンコードされたClientDataJSON
+     * @return 抽出されたchallenge文字列
+     */
     private String extractChallengeFromClientData(String clientDataJSON) {
         try {
+            // Base64 URLデコード
             String decodedClientData = new String(Base64.getUrlDecoder().decode(clientDataJSON));
-            // 簡単なJSON解析（実際のプロダクションではJSONライブラリを使用）
-            String challengePrefix = "\"challenge\":\"";
-            int startIndex = decodedClientData.indexOf(challengePrefix) + challengePrefix.length();
-            int endIndex = decodedClientData.indexOf("\"", startIndex);
-            return decodedClientData.substring(startIndex, endIndex);
+            
+            // JacksonでJSONをパース
+            JsonNode clientDataNode = objectMapper.readTree(decodedClientData);
+            
+            // challengeフィールドを取得
+            JsonNode challengeNode = clientDataNode.get("challenge");
+            if (challengeNode == null || !challengeNode.isTextual()) {
+                throw new RuntimeException("Challenge field not found or invalid in client data");
+            }
+            
+            return challengeNode.asText();
         } catch (Exception e) {
             throw new RuntimeException("Failed to extract challenge from client data", e);
         }
